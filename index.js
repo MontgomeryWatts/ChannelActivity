@@ -7,20 +7,20 @@ client.on('ready', () => {
 
 client.on('message', msg => {
   if (msg.content === '!activity') {
-    var manager = msg.channel.messages;
+    let manager = msg.channel.messages;
 
     manager.fetch({
       limit: 50,
       before: msg.id
     }).then(messages => {
-      var countObject = messages.reduce( (obj, message) => {
-        var author = message.author.username;
+      let countObject = messages.reduce( (obj, message) => {
+        let author = message.author.username;
         obj[author] = obj[author] ? obj[author]+1 : 1;
         return obj;
       }, {});
 
-      var authorKeys = Object.keys(countObject);
-      var replyString = authorKeys.reduce( (accumulator, author) => {
+      let authorKeys = Object.keys(countObject);
+      let replyString = authorKeys.reduce( (accumulator, author) => {
         return accumulator + `\n${author}: ${(countObject[author]/messages.size*100).toFixed(2)}% of last ${messages.size} messages`;
       }, '');
       
