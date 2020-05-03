@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
-const client = new Discord.Client();
+const { Client, MessageEmbed } = require('discord.js');
+const client = new Client();
 
 
 
@@ -12,7 +12,7 @@ client.on('message', msg => {
     let manager = msg.channel.messages;
 
     manager.fetch({
-      limit: 50,
+      limit: 100,
       before: msg.id
     }).then(messages => {
       let countObject = messages.reduce( (obj, message) => {
@@ -26,15 +26,20 @@ client.on('message', msg => {
         let percentage = countObject[author]/messages.size*100;
         let visualRepresentation = '';
         let bigDiamonds = Math.floor(percentage / 10);
-        console.log(bigDiamonds)
-        console.log(percentage)
         for (let i = 0; i < bigDiamonds; i++) visualRepresentation += ':large_blue_diamond:';
-        if (percentage - (bigDiamonds*10) >= 5) visualRepresentation += ':small_blue_diamond:';
-        return accumulator + `\n**${author}**: ${countObject[author]} messages (${percentage.toFixed(2)}%)\n${visualRepresentation}\n`;
-      }, 'Message Activity Report (Last 50 Messages):\n');
+        if (bigDiamonds == 0 || percentage - (bigDiamonds*10) >= 5) visualRepresentation += ':small_blue_diamond:';
+        return accumulator + `\n**${author}**: ${countObject[author]} messages (${percentage}%)\n${visualRepresentation}\n`;
+      }, '');
+
+      let embed = new MessageEmbed()
+        .setTitle('Message Activity Report (Last 100 Messages)\n')
+        .setDescription(replyString);
       
-      msg.channel.send(replyString)
-    }).catch(_ => msg.channel.send('Unable to retrieve messages'));
+      msg.channel.send(embed);
+    }).catch(err => {
+      console.error(err);
+      msg.channel.send('Unable to retrieve messages')
+    });
 
   }
 });
